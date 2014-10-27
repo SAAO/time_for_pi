@@ -1,0 +1,38 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          blah.sh
+# Required-Start:    $remote_fs $syslog $local_fs $network $time
+# Required-Stop:     $remote_fs $syslog
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start daemon at boot time
+# Description:       Startup Python script to handle gpio and lcd sidereal time
+### END INIT INFO
+TERM=linux
+ 
+case "$1" in
+	start)
+		
+    		echo "STARTING SIDEREAL TIME AND LCD SCRIPTS"
+		cd /home/time_for_pi
+		sudo bash gps_config
+		cd /home/sidereal_time
+		sudo killall chronyd gpsd
+		sudo chronyd
+		sleep 5
+		sudo ./gps_init
+		sudo gpio load i2c
+		sudo python new_code.py 2> /etc/code_error.txt
+	;;
+	stop)
+		echo "Stopping example"
+		# kill application you want to stop
+		#killall python
+	;;	
+	*)
+	echo "Usage: /etc/init.d/example{start|stop}"
+    exit 1
+    ;;
+esac
+ 
+exit 0

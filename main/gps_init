@@ -1,0 +1,4 @@
+#!/bin/bash
+sudo killall gpsd
+sudo gpsd -n /dev/ttyACM0
+echo "GPS INITIALIZED"

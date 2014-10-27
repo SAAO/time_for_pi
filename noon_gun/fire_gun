@@ -1,0 +1,6 @@
+#!/bin/bash
+sudo gpio -g mode 25 out
+sudo gpio -g write 25 1
+sleep 2
+sudo gpio -g write 25 0
+exit

@@ -1,0 +1,29 @@
+#!/bin/bash
+# disable unnecessary messages:
+python /home/time_for_pi/gps_setup/ubxgen.py 06 01 03 00 f0 01 00 > CFG-MSG-GPGLL-OFF.ubx
+python /home/time_for_pi/gps_setup/ubxgen.py 06 01 03 00 f0 02 00 > CFG-MSG-GPGSA-OFF.ubx
+python /home/time_for_pi/gps_setup/ubxgen.py 06 01 03 00 f0 03 00 > CFG-MSG-GPGSV-OFF.ubx
+python /home/time_for_pi/gps_setup/ubxgen.py 06 01 03 00 f0 05 00 > CFG-MSG-GPVTG-OFF.ubx
+python /home/time_for_pi/gps_setup/ubxgen.py 06 01 03 00 f0 08 00 > CFG-MSG-GPZDA-OFF.ubx
+python /home/time_for_pi/gps_setup/ubxgen.py 06 01 03 00 f0 04 00 > CFG-MSG-GPRMC-OFF.ubx
+python /home/time_for_pi/gps_setup/ubxgen.py 06 01 03 00 f0 00 00 > CFG-MSG-GPGGA-OFF.ubx
+python /home/time_for_pi/gps_setup/ubxgen.py 06 31 20 00 01 00 00 00 32 00 40 00 E8 03 00 00 01 00 00 00 00 00 00 80 00 00 00 00 00 00 00 00 6B 00 00 00 A1 28 > CFG-MSG-KHZ-POS.ubx
+python /home/time_for_pi/gps_setup/ubxgen.py 06 31 20 00 01 00 00 00 32 00 40 00 E8 03 00 00 01 00 00 00 00 00 00 80 00 00 00 00 00 00 00 00 2B 00 00 00 61 28 > CFG-MSG-KHZ-NEG.ubx
+
+cat CFG-MSG-GPGSV-OFF.ubx > /dev/ttyACM0
+cat CFG-MSG-GPVTG-OFF.ubx > /dev/ttyACM0
+cat CFG-MSG-GPGLL-OFF.ubx > /dev/ttyACM0
+cat CFG-MSG-GPGSA-OFF.ubx > /dev/ttyACM0
+cat CFG-MSG-GPGGA-OFF.ubx > /dev/ttyACM0
+cat CFG-MSG-KHZ-NEG.ubx > /dev/ttyACM0
+
+
+
+# reduce measurement time and message cycle to 250ms (4Hz):
+#ubxgen.py 06 08 06 00 fa 00 01 00 00 00 > CFG-RATE-4HZ.ubx
+#cat CFG-RATE-4HZ.ubx > /dev/ttySAC1
+
+# alternatively:
+# reduce measurement time and message cycle to 500ms (2Hz):
+#ubxgen.py 06 08 06 00 f4 01 01 00 00 00 > CFG-RATE-2HZ.ubx
+#cat CFG-RATE-2HZ.ubx > /dev/ttySAC1

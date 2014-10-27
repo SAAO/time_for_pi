@@ -1,0 +1,7 @@
+#!/bin/bash
+command="/home/time_for_pi/noon_gun/fire_gun"
+job="59 11 * * * sleep 50 ; $command"
+cat <(fgrep -i -v "$command" <(crontab -l)) <(echo "$job") | crontab -
+command="/home/time_for_pi/noon_gun/warn_gun"
+job="0 12 * * * sleep 0 ; $command"
+cat <(fgrep -i -v "$command" <(crontab -l)) <(echo "$job") | crontab -
