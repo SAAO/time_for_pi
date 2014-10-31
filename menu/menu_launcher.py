@@ -290,6 +290,28 @@ def processmenu(menu, parent=None):
 					wseconds = user_input('Enter SECONDS as a whole number between 0 and 59:') #Prompt seconds
 				pre_fire = wseconds + (wminutes * 60) + (whours * 3600)
 				
+				
+				seconds=seconds-2
+				wseconds=wseconds+2
+				if seconds <0:
+					seconds=60+seconds
+					minutes=minutes-1
+					if minutes<0:
+						minutes = 60-minutes
+						hours=hours-1
+						if hours<0:
+							hours = 24-hours
+				if wseconds>59:
+					wminutes = wminutes+1
+					wseconds=wseconds-60
+					if wminutes>59:
+						wminutes=wminutes-60
+						whours=whours+1
+						if whours>23:
+							whours=23
+				
+				
+				
 				total_time = (hours*3600)+(minutes*60)+seconds
 				total_time = total_time-pre_fire
 				if total_time<0:
@@ -306,12 +328,12 @@ def processmenu(menu, parent=None):
 				seconds = str(seconds)
 				warn_job_text = "job=\""+warn_time_m + " " + warn_time_h +  " * * * sleep " + warn_time_s + " ; $command\""
 				fire_job_text = "job=\""+minutes + " " + hours + " * * * sleep " +seconds + " ; $command\""
-				replace_line("set_gun", 2, warn_job_text)
-				replace_line("set_gun", 5, fire_job_text)
+				replace_line("set_gun", 2, fire_job_text)
+				replace_line("set_gun", 5, warn_job_text)
 				
 				
 				
-				subprocess.call(".set_gun")
+				subprocess.call("./set_gun")
 				
 			if menu['options'][getin]['command'] == "fpd": # firing pulse duration
 				seconds = raw_input('Enter SECONDS:') #Prompt seconds
