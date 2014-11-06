@@ -297,10 +297,10 @@ def processmenu(menu, parent=None):
 					seconds=60+seconds
 					minutes=minutes-1
 					if minutes<0:
-						minutes = 60-minutes
+						minutes = 60+minutes
 						hours=hours-1
 						if hours<0:
-							hours = 24-hours
+							hours = 24+hours
 				if wseconds>59:
 					wminutes = wminutes+1
 					wseconds=wseconds-60

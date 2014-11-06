@@ -1,5 +1,5 @@
 #!/bin/bash
-TERM=linux
+sleep 1
 file="/var/run/python-script.pid" #the file where you keep your string name
 pid=`cat $file`        #the output of cat $file is assigned to the $name variable
 echo "running"
@@ -7,10 +7,23 @@ if ps -p $pid > /dev/null
 then
    echo "$pid is running"
    # Do something knowing the pid exists, i.e. the process with $PID is running
-   exit
 else
    echo $pid "is not running"
-   /usr/bin/env python /home/sidereal_time/new_code.py 2> /etc/code_error.txt &
+   /usr/bin/python /home/sidereal_time/new_code.py
 fi
+
+gpsd_pid=$(pidof gpsd)
+
+if ps -p $gpsd_pid > /dev/null; then
+   echo "GPSD is running"
+   # process was found
+   exit
+else
+  # process not found
+  echo "GPSD IS NOT RUNNING"
+  cd /home/time_for_pi/main
+  sudo ./gps_init
+fi
+
 
 exit
