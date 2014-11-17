@@ -290,28 +290,8 @@ def processmenu(menu, parent=None):
 					wseconds = user_input('Enter SECONDS as a whole number between 0 and 59:') #Prompt seconds
 				pre_fire = wseconds + (wminutes * 60) + (whours * 3600)
 				
-				
-				seconds=seconds-2
-				wseconds=wseconds+2
-				if seconds <0:
-					seconds=60+seconds
-					minutes=minutes-1
-					if minutes<0:
-						minutes = 60+minutes
-						hours=hours-1
-						if hours<0:
-							hours = 24+hours
-				if wseconds>59:
-					wminutes = wminutes+1
-					wseconds=wseconds-60
-					if wminutes>59:
-						wminutes=wminutes-60
-						whours=whours+1
-						if whours>23:
-							whours=23
-				
-				
-				
+				#convert entered numbers to absolute to calculate the warning time====================================================================
+				cron_total_time = (hours*3600)+(minutes*60)+seconds
 				total_time = (hours*3600)+(minutes*60)+seconds
 				total_time = total_time-pre_fire
 				if total_time<0:
@@ -319,24 +299,82 @@ def processmenu(menu, parent=None):
 				warn_time_h = int(total_time/3600)
 				warn_time_m = int((total_time%3600)/60)
 				warn_time_s = int((total_time%3600)%60)
-				#set the cron jobs up
-				warn_time_h = str(warn_time_h)
-				warn_time_m = str(warn_time_m)
-				warn_time_s = str(warn_time_s)
-				hours = str(hours)
-				minutes = str(minutes)
-				seconds = str(seconds)
-				warn_job_text = "job=\""+warn_time_m + " " + warn_time_h +  " * * * sleep " + warn_time_s + " ; $command\""
-				fire_job_text = "job=\""+minutes + " " + hours + " * * * sleep " +seconds + " ; $command\""
-				replace_line("set_gun", 2, fire_job_text)
-				replace_line("set_gun", 5, warn_job_text)
+				if warn_time_h<10:
+					warn_time_h="0" + str(warn_time_h)
+				else:
+					warn_time_h = str(warn_time_h)
+				if warn_time_m<10:
+					warn_time_m="0" + str(warn_time_m)
+				else:
+					warn_time_m = str(warn_time_m)
+				if warn_time_s<10:
+					warn_time_s="0" + str(warn_time_s)
+				else:
+					warn_time_s = str(warn_time_s)
 				
+				if hours<10:
+					hours="0" + str(hours)
+				else:
+					hours = str(hours)
+				if minutes<10:
+					minutes="0" + str(minutes)
+				else:
+					minutes = str(minutes)
+				if seconds<10:
+					seconds="0" + str(seconds)
+				else:
+					seconds = str(seconds)				
 				
+				'''seconds=seconds-2				
+				if seconds <0:
+					seconds=60+seconds
+					minutes=minutes-1
+					if minutes<0:
+						minutes = 60+minutes
+						hours=hours-1
+						if hours<0:
+							hours = 24+hours'''
+				#calculate time to launch python script to fire the gun====================================================================
+				cron_seconds=wseconds+10
+				if cron_seconds>59:
+					cron_minutes = wminutes+1
+					cron_seconds=wseconds-60
+					if cron_minutes>59:
+						cron_minutes=cron_minutes-60
+						cron_hours=whours+1
+						if cron_hours>23:
+							cron_hours=23
+				else:
+					cron_seconds=wseconds
+					cron_minutes=wminutes
+					cron_hours=whours
+				cron_fire = cron_seconds + (cron_minutes * 60) + (cron_hours * 3600)
+				
+				#conr job time calculation====================================================================
+				total_time = cron_total_time-cron_fire
+				if total_time<0:
+					total_time = 86400 + total_time
+				cron_time_h = str(int(total_time/3600))
+				cron_time_m = str(int((total_time%3600)/60))
+				cron_time_s = str(int(wseconds))
+				
+				#text file containing firing times====================================================================
+				warn_job_text = warn_time_h + ":" + warn_time_m + ":" + warn_time_s
+				fire_job_text = hours +":"+minutes + ":" + seconds
+				replace_line("gun_time", 0,warn_job_text)  
+				replace_line("gun_time", 1,fire_job_text)
+				#bash script to set the cron job
+				fire_job_text = "job=\""+cron_time_m + " " + cron_time_h +  " * * * sleep " + cron_time_s + " ; $command\""
+				replace_line("set_gun", 3, fire_job_text)
 				
 				subprocess.call("./set_gun")
 				
 			if menu['options'][getin]['command'] == "fpd": # firing pulse duration
-				seconds = raw_input('Enter SECONDS:') #Prompt seconds
+				seconds = user_input('Enter SECONDS as a whole number between 0 and 59:') #Prompt seconds	
+				while seconds>60 or seconds<0:
+					seconds = user_input('Enter SECONDS as a whole number between 0 and 59:') #Prompt seconds
+				seconds=str(seconds)
+				replace_line("gun_time", 2,seconds)
 			#=====================================================================================================
 			if menu['options'][getin]['command'] == "P1": #light pulse 1PPS
 				putinfile("/home/time_for_pi/menu/time_pulse.txt", "0")

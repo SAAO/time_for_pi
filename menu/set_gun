@@ -1,7 +1,6 @@
 #!/bin/bash
-command="/home/time_for_pi/noon_gun/fire_gun"
-job="59 11 * * * sleep 58 ; $command"
+cd /home/time_for_pi/menu
+command="/usr/bin/python /home/time_for_pi/menu/noon_fire.py 2> /etc/noon_error.txt"
+job="59 11 * * * sleep 20 ; $command"
 cat <(fgrep -i -v "$command" <(crontab -l)) <(echo "$job") | crontab -
-command="/home/time_for_pi/noon_gun/warn_gun"
-job="59 11 * * * sleep 38 ; $command"
-cat <(fgrep -i -v "$command" <(crontab -l)) <(echo "$job") | crontab -
+
