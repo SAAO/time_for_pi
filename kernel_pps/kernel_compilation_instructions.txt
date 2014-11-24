@@ -1,0 +1,17 @@
+Use the following procedure to compile the kernel with the pps gpio module:
+clone the linux source code > git clone https://github.com/raspberrypi/linux
+copy the current config and enable the pps. 
+
+>git clone https://github.com/raspberrypi/linux
+>wget https://raw.github.com/lampeh/rpi-misc/master/linux-pps/linux-rpi-pps-gpio-bcm2708.diff       (change the gpio pin to 7)
+>patch -p1 <../linux-rpi-pps-gpio-bcm2708.diff
+>zcat /proc/config.gz > .config
+>apt-get install libncurses5-dev                     (required to run menuconfig)
+>install pps-tools  apt-get install pps-tools
+>make menuconfig 
+>enable pps device drivers as a module
+3. get the pps-tools source files >apt-get source pps-tools
+4. copy timepps.h into the linux source folder
+5. make and install the modules
+>make modules && make modules_install
+6. add pps-gpio to /etc/modules
