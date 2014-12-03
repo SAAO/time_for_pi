@@ -14,15 +14,15 @@ case "$1" in
 	start)
 		
     		echo "STARTING SIDEREAL TIME AND LCD SCRIPTS"
-		cd /home/time_for_pi
+		cd /home/time_for_pi/gps_setup
 		sudo bash gps_config
-		cd /home/sidereal_time
 		sudo killall chronyd gpsd
 		sudo chronyd
 		sleep 5
 		sudo ./gps_init
-		sudo gpio load i2c
-		sudo python new_code.py 2> /etc/code_error.txt
+		#sudo gpio load i2c
+		cd /home/time_for_pi/main
+		sudo python time_service.py 2> /etc/code_error.txt
 	;;
 	stop)
 		echo "Stopping example"
