@@ -14,6 +14,7 @@ import lcd
 import socket
 import fcntl
 import struct
+import sqlite3
 
 
 traceback_template = '''Traceback (most recent call last):
@@ -39,6 +40,7 @@ fix_flag=True #flag to ensure no gps fix is only printed once
 old_sast=0                      # initialize seconds register
 diff=0
 delay=0
+previous_option = '7Hz'
 
 
 #================================================================GPIO SETUP==========================================
@@ -102,54 +104,95 @@ def dech(time):
 		return 0, 0, 0
 	return 0, 0, 0
 #=====================================================================================================
+def pulse_read():
+	the_id=1
+	conn = sqlite3.connect('/home/time_for_pi/frontpage/timeserver.db', timeout=1)
+	curs=conn.cursor()
+	firing_db="SELECT* FROM time_pulse"
+	curs.execute(firing_db)
+	pulse=[dict(selection=row[1]) for row in curs.fetchall()]
+	return pulse[0]['selection']
 def IO(previous_option):
 	try:
 		os.system('clear')
-		tp = open("/home/time_for_pi/menu/time_pulse.txt", 'r')
-		option = tp.read()
-		option=int(option)
-		if option is not previous_option:
+		option = str(pulse_read())
+		print option, previous_option
+		if option != previous_option:
+			print "ERROR"
 			time_pulse(option)
-		previous_option=option
-		tp.close()
-	except:
-		GPIO.output(LIGHT_PULSE_ON, False)
+	except Exception, e:				
+		exc_type, exc_value, exc_traceback = sys.exc_info() # most recent (if any) by default
+		traceback_details={
+							'filename': exc_traceback.tb_frame.f_code.co_filename,
+							'lineno'  : exc_traceback.tb_lineno,
+							'name'    : exc_traceback.tb_frame.f_code.co_name,
+							'type'    : exc_type.__name__,
+							'message' : exc_value.message, # or see traceback._some_str()
+							}
+		
+		# This still isn't "completely safe", though!
+		# "Best (recommended) practice: replace all exc_type, exc_value, exc_traceback
+		# with sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2]
+		print
+		print traceback.format_exc()
+		print
+		print traceback_template % traceback_details
+		print
+					
+		end = open("/home/time_for_pi/end.txt", 'wb')
+		end.write("File:\t\t\t")
+		end.write(exc_traceback.tb_frame.f_code.co_filename)
+		end.write("\nLine:\t\t\t")
+		end.write(str(exc_traceback.tb_lineno))
+		end.write("\nModule:\t\t\t")
+		end.write(exc_traceback.tb_frame.f_code.co_name)
+		end.write("\nError Type:\t\t")
+		end.write(exc_type.__name__)
+		end.write("\nError:\t\t\t")
+		end.write(exc_value.message)
+		end.write("\n")
+		end.close()
+		del(exc_type, exc_value, exc_traceback) # So we don't leave our local labels/objects dangling			
+	#except:
+	#	print "error oFFF"
+	#	GPIO.output(LIGHT_PULSE_ON, False)
 
-	return previous_option
+	return option
 	
 def time_pulse(option):
 	GPIO.output(LIGHT_PULSE_ON, False)
-	if option==0:
+	if option == '1pps':
 		os.system("bash /home/time_for_pi/gps_setup/invert_khz")
 		delay=0
 		GPIO.output(LP_D0, False)
 		GPIO.output(LP_D1, False)
 		GPIO.output(LP_D2, False)
-	elif option==1:
+	elif option == '2hz':
+		print option
 		os.system("bash /home/time_for_pi/gps_setup/invert_khz")
 		delay=0.25
 		GPIO.output(LP_D0, True)
 		GPIO.output(LP_D1, False)
 		GPIO.output(LP_D2, False)		
-	elif option==2:
+	elif option == '5hz':
 		os.system("bash /home/time_for_pi/gps_setup/invert_khz")
 		delay=0.1
 		GPIO.output(LP_D0, False)
 		GPIO.output(LP_D1, True)
 		GPIO.output(LP_D2, False)
-	elif option==3:
+	elif option == '10hz':
 		os.system("bash /home/time_for_pi/gps_setup/invert_khz")
 		delay=0.05
 		GPIO.output(LP_D0, True)
 		GPIO.output(LP_D1, True)
 		GPIO.output(LP_D2, False)
-	elif option==4:
+	elif option == '100hz':
 		os.system("bash /home/time_for_pi/gps_setup/invert_khz")
 		delay=0.005
 		GPIO.output(LP_D0, False)
 		GPIO.output(LP_D1, False)
 		GPIO.output(LP_D2, True)
-	elif option==5:
+	elif option == '1khz':
 		os.system("bash /home/time_for_pi/gps_setup/noninvert_khz")
 		delay=0
 		GPIO.output(LP_D0, True)
@@ -162,7 +205,8 @@ def time_pulse(option):
 	while S is seconds_now:
 		timeNow = dt.datetime.now()
 		S = timeNow.second
-	if option is not 6:
+	if option != 'off':
+		print "ON"
 		time.sleep(delay)
 		GPIO.output(LIGHT_PULSE_ON, True)
 	return 
@@ -189,7 +233,6 @@ class GpsPoller(threading.Thread):
 
  #=====================================================================================================
 if __name__ == '__main__':
-	previous_option = 7
 	fd = lcd.init()
 	gpsp = GpsPoller() # create the thread
 	no_gps_fix()
@@ -300,5 +343,4 @@ if __name__ == '__main__':
 		end.close()
 		del(exc_type, exc_value, exc_traceback) # So we don't leave our local labels/objects dangling
 		
-
 

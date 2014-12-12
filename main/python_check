@@ -9,7 +9,7 @@ then
    # Do something knowing the pid exists, i.e. the process with $PID is running
 else
    echo $pid "is not running"
-   /usr/bin/python /home/sidereal_time/new_code.py
+   /usr/bin/python /home/time_for_pi/main/time_service.py
 fi
 
 gpsd_pid=$(pidof gpsd)
