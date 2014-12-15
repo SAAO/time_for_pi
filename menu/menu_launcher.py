@@ -10,6 +10,7 @@ import curses, os #curses is the interface for capturing key presses on the menu
 import signal
 import time
 import subprocess
+import sqlite3
 
 
 def sigint_handler(signum, frame):
@@ -52,11 +53,7 @@ tp_option=''
 
 
 #get the currently selected time pulse
-tp = open("/home/time_for_pi/menu/time_pulse.txt", 'r')
-for line in tp:
-	tp_option +=line
-tp.close()
-display_tp=tp_dict.get(tp_selected)	
+
 
 menu_data = {
 		'title': "Time Service Configuration", 'type': MENU, 'subtitle': "Please select an option...",
@@ -72,42 +69,6 @@ menu_data = {
 			  { 'title': tp_options[4], 'type': COMMAND, 'command': 'P5' },
 			  { 'title': tp_options[5], 'type': COMMAND, 'command': 'P6' },
 			  { 'title': tp_options[6], 'type': COMMAND, 'command': 'P7' },
-			]
-			},
-			{ 'title': "LCD Data Display", 'type': MENU, 'subtitle': "Select the line of the LCD you would like to modify",
-			'options': [
-						  { 'title': "LINE 1", 'type': MENU, 'subtitle': "Select Which information should appear on line 1...",
-						'options': [
-						  { 'title': lcd_options[0], 'type': COMMAND, 'command': 'L1' },
-						  { 'title': lcd_options[1], 'type': COMMAND, 'command': 'L1' },
-						  { 'title': lcd_options[2], 'type': COMMAND, 'command': 'L1' },
-						  { 'title': lcd_options[3], 'type': COMMAND, 'command': 'L1' },
-						]
-						},
-						  { 'title': "LINE 2", 'type': MENU, 'subtitle': "Select Which information should appear on line 2...",
-						'options': [
-						  { 'title': lcd_options[0], 'type': COMMAND, 'command': 'L2' },
-						  { 'title': lcd_options[1], 'type': COMMAND, 'command': 'L2' },
-						  { 'title': lcd_options[2], 'type': COMMAND, 'command': 'L2' },
-						  { 'title': lcd_options[3], 'type': COMMAND, 'command': 'L2' },
-						]
-						},
-						  { 'title': "LINE 3", 'type': MENU, 'subtitle': "Select Which information should appear on line 3...",
-						'options': [
-						  { 'title': lcd_options[0], 'type': COMMAND, 'command': 'L3' },
-						  { 'title': lcd_options[1], 'type': COMMAND, 'command': 'L3' },
-						  { 'title': lcd_options[2], 'type': COMMAND, 'command': 'L3' },
-						  { 'title': lcd_options[3], 'type': COMMAND, 'command': 'L3' },
-						]
-						},
-						{ 'title': "LINE 4", 'type': MENU, 'subtitle': "Select Which information should appear on line 4...",
-						'options': [
-						  { 'title': lcd_options[0], 'type': COMMAND, 'command': 'L4' },
-						  { 'title': lcd_options[1], 'type': COMMAND, 'command': 'L4' },
-						  { 'title': lcd_options[2], 'type': COMMAND, 'command': 'L4' },
-						  { 'title': lcd_options[3], 'type': COMMAND, 'command': 'L4' },
-						]
-						},
 			]
 			},
 			{ 'title': "Check GPS Data (Press CTRL+C to return)", 'type': COMMAND, 'command': 'gpsmon' },
@@ -131,6 +92,27 @@ menu_data = {
 			},
 		]		
 }
+#=====================================================================================================	
+#=====================================================================================================	
+#Database interface functions
+
+def pulse_read():
+        the_id=1
+        conn = sqlite3.connect('/home/time_for_pi/frontpage/timeserver.db', timeout=1)
+        curs=conn.cursor()
+        firing_db="SELECT* FROM time_pulse"
+        curs.execute(firing_db)
+        pulse=[dict(selection=row[1]) for row in curs.fetchall()]
+        return pulse[0]['selection']
+
+def pulse_insert(tselect):
+	the_id = '1'
+	conn = sqlite3.connect('/home/time_for_pi/frontpage/timeserver.db', timeout=1)
+	curs=conn.cursor()
+	curs.execute(''' UPDATE time_pulse SET selection=? WHERE id=? ''', (tselect, the_id))
+	conn.commit()
+	return
+
 #=====================================================================================================	
 #=====================================================================================================	
 #this function edits a single line of a text file.
@@ -227,6 +209,7 @@ def runmenu(menu, parent):
 #=====================================================================================================	
 # This function calls showmenu and then acts on the selected item
 def processmenu(menu, parent=None):
+	display_tp=pulse_read()
 	optioncount = len(menu['options'])
 	exitmenu = False
 	while not exitmenu: #Loop until the user exits the menu
@@ -252,17 +235,6 @@ def processmenu(menu, parent=None):
 			curses.def_prog_mode()    # save current curses environment
 			os.system('reset')
 			#=====================================================================================================		
-			#Select time pulse and write to file time_pulse
-			for s in range(len(lcd_options)):
-				if menu['options'][getin]['command'] == "L1": #depending on the command code (set by which line sub menu you are in) write to specific line in text file	
-					replace_line("lcd_data.txt", 0, str(s))	
-				if menu['options'][getin]['command'] == "L2":	
-					replace_line("lcd_data.txt", 1, str(s))
-				if menu['options'][getin]['command'] == "L3":	
-					replace_line("lcd_data.txt", 2, str(s))
-				if menu['options'][getin]['command'] == "L4":	
-					replace_line("lcd_data.txt", 3, str(s))
-			#=====================================================================================================
 				
 			#=====================================================================================================	
 			if menu['options'][getin]['command'] == "ft": #firing time
@@ -278,7 +250,7 @@ def processmenu(menu, parent=None):
 				while seconds>60 or seconds<0:
 					seconds = user_input('Enter SECONDS as a whole number between 0 and 59:') #Prompt seconds
 				#====================pre fire warning
-				print "Time before firing when the warning pulse triggers in hours minutes and seconds"
+				print "Time before firing time when the warning pulse triggers in hours minutes and seconds *NOTE* this is an offset not a time."
 				whours = user_input('Enter HOURS as a whole number between 0 and 24:') #Prompt hours
 				while whours>23 or whours<0:
 					whours = user_input('Enter HOURS as a whole number between 0 and 24:') #Prompt hours
@@ -361,12 +333,12 @@ def processmenu(menu, parent=None):
 				#text file containing firing times====================================================================
 				warn_job_text = warn_time_h + ":" + warn_time_m + ":" + warn_time_s
 				fire_job_text = hours +":"+minutes + ":" + seconds
-				replace_line("gun_time", 0,warn_job_text)  
-				replace_line("gun_time", 1,fire_job_text)
+				replace_line("/home/time_for_pi/menu/gun_time", 0,warn_job_text)  
+				replace_line("/home/time_for_pi/menu/gun_time", 1,fire_job_text)
 				#bash script to set the cron job
 				fire_job_text = "job=\""+cron_time_m + " " + cron_time_h +  " * * * sleep " + cron_time_s + " ; $command\""
-				replace_line("set_gun", 3, fire_job_text)
-				
+				replace_line("/home/time_for_pi/menu/set_gun", 3, fire_job_text)
+				os.chdir("/home/time_for_pi/menu")
 				subprocess.call("./set_gun")
 				
 			if menu['options'][getin]['command'] == "fpd": # firing pulse duration
@@ -374,22 +346,22 @@ def processmenu(menu, parent=None):
 				while seconds>60 or seconds<0:
 					seconds = user_input('Enter SECONDS as a whole number between 0 and 59:') #Prompt seconds
 				seconds=str(seconds)
-				replace_line("gun_time", 2,seconds)
+				replace_line("/home/time_for_pi/menu/gun_time", 2,seconds)
 			#=====================================================================================================
 			if menu['options'][getin]['command'] == "P1": #light pulse 1PPS
-				putinfile("/home/time_for_pi/menu/time_pulse.txt", "0")
+				pulse_insert("1pps")
 			if menu['options'][getin]['command'] == "P2": #light pulse 2Hz
-				putinfile("/home/time_for_pi/menu/time_pulse.txt", "1")
+				pulse_insert("2hz")
 			if menu['options'][getin]['command'] == "P3": #light pulse 5Hz
-				putinfile("/home/time_for_pi/menu/time_pulse.txt", "2")
+				pulse_insert("5hz")
 			if menu['options'][getin]['command'] == "P4": #light pulse 10Hz
-				putinfile("/home/time_for_pi/menu/time_pulse.txt", "3")
+				pulse_insert("10hz")
 			if menu['options'][getin]['command'] == "P5": #light pulse 100Hz
-				putinfile("/home/time_for_pi/menu/time_pulse.txt", "4")
+				pulse_insert("100hz")
 			if menu['options'][getin]['command'] == "P6": #light pulse 1Khz
-				putinfile("/home/time_for_pi/menu/time_pulse.txt", "5")
+				pulse_insert("1khz")
 			if menu['options'][getin]['command'] == "P7": #light pulse OFF
-				putinfile("/home/time_for_pi/menu/time_pulse.txt", "6")
+				pulse_insert("off")
 			#=====================================================================================================			
 			screen.clear() #clears previous screen
 			os.system(menu['options'][getin]['command']) # run the command
