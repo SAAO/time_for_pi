@@ -54,7 +54,7 @@ GPIO.setup(LP_D2, GPIO.OUT) # lightpulse select D2
 GPIO.setup(LIGHT_PULSE_ON, GPIO.OUT) # lightpulse select D2
 GPIO.setup(ng_warning, GPIO.OUT, pull_up_down = GPIO.PUD_DOWN) # noon gun warning
 GPIO.setup(ng_fire, GPIO.OUT, pull_up_down = GPIO.PUD_DOWN) # noon gun fire
-GPIO.setup(kilohertz, GPIO.IN) # noon gun fire
+GPIO.setup(kilohertz, GPIO.IN) 
 
 
 GPIO.output(gps_status, False)
@@ -116,46 +116,12 @@ def IO(previous_option):
 	try:
 		os.system('clear')
 		option = str(pulse_read())
-		print option, previous_option
 		if option != previous_option:
-			print "ERROR"
 			time_pulse(option)
-	except Exception, e:				
-		exc_type, exc_value, exc_traceback = sys.exc_info() # most recent (if any) by default
-		traceback_details={
-							'filename': exc_traceback.tb_frame.f_code.co_filename,
-							'lineno'  : exc_traceback.tb_lineno,
-							'name'    : exc_traceback.tb_frame.f_code.co_name,
-							'type'    : exc_type.__name__,
-							'message' : exc_value.message, # or see traceback._some_str()
-							}
-		
-		# This still isn't "completely safe", though!
-		# "Best (recommended) practice: replace all exc_type, exc_value, exc_traceback
-		# with sys.exc_info()[0], sys.exc_info()[1], sys.exc_info()[2]
-		print
-		print traceback.format_exc()
-		print
-		print traceback_template % traceback_details
-		print
-					
-		end = open("/home/time_for_pi/end.txt", 'wb')
-		end.write("File:\t\t\t")
-		end.write(exc_traceback.tb_frame.f_code.co_filename)
-		end.write("\nLine:\t\t\t")
-		end.write(str(exc_traceback.tb_lineno))
-		end.write("\nModule:\t\t\t")
-		end.write(exc_traceback.tb_frame.f_code.co_name)
-		end.write("\nError Type:\t\t")
-		end.write(exc_type.__name__)
-		end.write("\nError:\t\t\t")
-		end.write(exc_value.message)
-		end.write("\n")
-		end.close()
-		del(exc_type, exc_value, exc_traceback) # So we don't leave our local labels/objects dangling			
-	#except:
-	#	print "error oFFF"
-	#	GPIO.output(LIGHT_PULSE_ON, False)
+				
+	except:
+		print "error oFFF"
+		GPIO.output(LIGHT_PULSE_ON, False)
 
 	return option
 	
@@ -210,6 +176,14 @@ def time_pulse(option):
 		time.sleep(delay)
 		GPIO.output(LIGHT_PULSE_ON, True)
 	return 
+	
+#=====================================================================================================	
+def gps_data(gps_time, gps_status, gps_long, gps_lat, gps_tdate):
+        conn=sqlite3.connect('/home/time_for_pi/frontpage/timeserver.db', timeout=1)
+        curs=conn.cursor()
+        curs.execute(''' UPDATE gps_check SET gpstime=?, gpsstatus=?, tdate=?, longitude=?, lattitude=? ''', (gps_time, gps_status, gps_tdate, gps_long, gps_lat))
+        conn.commit()
+        return
  #=====================================================================================================
 class GpsPoller(threading.Thread):
   def __init__(self):
@@ -249,6 +223,7 @@ if __name__ == '__main__':
 				gpsNow = gpsd.utc
 				gpsNow = gpsNow.replace('Z', 'UTC')
 				ctLong = gpsd.fix.longitude
+				ctLat = gpsd.fix.latitude
 				gpsNow = sid.parseDatetime(gpsNow)
 				GST = sid.SiderealTime.fromDatetime(gpsNow)
 				LST =GST.hours+(ctLong/15)
@@ -259,6 +234,9 @@ if __name__ == '__main__':
 				HOURS = timeNow.hour
 				MINUTES = timeNow.minute
 				SECONDS = timeNow.second						
+				gps_fix_status=str(gpsd.fix.mode) + "D Fix"
+				
+				gps_data(gpsNow, gps_fix_status, ctLong, ctLat, "2014")
 				
 				#LCD strings
 				#sidereal string
