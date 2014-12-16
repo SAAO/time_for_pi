@@ -54,19 +54,17 @@ if __name__ == '__main__':
 		start_dt=f_log[0][0] + " " + f_log[0][1]
 		length=len(f_log)
 		end_dt=f_log[length-1][0] + " " + f_log[length-1][1]
-		the_line= start_dt + "		" + end_dt + "		" + str(skew_ppm_avg) + "		" + str(offset_avg) + "		" + str(offset_sd_avg) + "		" + str(rem_corr_avg)
+		the_line= start_dt + " ->" + end_dt + "		" + str(skew_ppm_avg) + "		" + str(offset_avg) + "		" + str(offset_sd_avg) + "		" + str(rem_corr_avg)
 		print the_line
 		#try to open file with append option if it does not exist create it
-		try:
-			file=open("/var/log/chrony/tracking_summary.log" , "a")
-		except:
-			file=open("/var/log/chrony/tracking_summary.log" , "wb")
+		file=open("/var/log/chrony/tracking_summary.log" , "a")
+		file.write("Summary Period ================================= ppm skew =================== offset ============== offset sd =================== rem. corr. \n")
 		file.write(the_line)
 		file.close
 		#restart chronyd
 		os.system("rm /var/log/chrony/tracking.log") #MAY HAVE STOPPED CHRONY FROM LOGGING
 		os.system("sudo killall chronyd")
-		os.system("chronyd")
+		os.system("sudo /usr/local/sbin/chronyd")
 		
 		#print "START: ", start_dt, "END: ", end_dt, "offset: ", offset_avg, "   skew_pps: ", skew_ppm_avg, "		offset_SD: ", offset_sd_avg, "		rem_corr: ", rem_corr_avg
 			
