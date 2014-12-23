@@ -22,9 +22,9 @@ case "$1" in
 		sudo ./gps_init
 		sudo gpio load i2c
 		cd /home/time_for_pi/main
-		sudo python time_service.py 2> /home/time_for_pi/code_error.txt &
+		sudo python time_service.py 2> /etc/code_error.txt &
 		cd /home/time_for_pi/frontpage
-		sudo python timeserver.py 2> /home/time_for_pi/web_log.txt &
+		sudo python timeserver.py 2> /etc/web_log.txt &
 	;;
 	stop)
 		echo "Stopping example"
