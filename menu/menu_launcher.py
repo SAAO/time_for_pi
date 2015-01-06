@@ -11,6 +11,7 @@ import signal
 import time
 import subprocess
 import sqlite3
+from crontab import CronTab
 
 
 def sigint_handler(signum, frame):
@@ -113,6 +114,14 @@ def pulse_insert(tselect):
 	conn.commit()
 	return
 
+def firing(warning, firing, pulse):
+	firing_id = '1'
+	conn = sqlite3.connect('/home/time_for_pi/frontpage/timeserver.db', timeout=1)
+	curs=conn.cursor()
+	curs.execute(''' UPDATE time_firing SET pre_firing=?, firing_time=?, firing_pulse=? WHERE fid=? ''', (warning, firing, pulse, firing_id))
+	conn.commit()
+	return
+
 #=====================================================================================================	
 #=====================================================================================================	
 #this function edits a single line of a text file.
@@ -205,7 +214,33 @@ def runmenu(menu, parent):
       else: pos = optioncount
   # return index of the selected item
   return pos, parent
-#=====================================================================================================	
+#=====================================================================================================
+def noon_cron(hour, minute, second, pre_f_warn):
+	second=second-pre_f_warn-10
+	if second<0:
+		second=60+second
+		minute=minute-1
+		if minute<0:
+			minute=60+minute
+			hour=hour-1
+			if hour<0:
+				hour=24+hour
+	
+	hou=str(hour)
+	min=str(minute)
+	sec=str(second)
+	root_cron = CronTab(user='root')
+	root_cron.remove_all(command='/usr/bin/python /home/time_for_pi/menu/noon_fire.py 2> /etc/noon_error.txt')
+	noon_job = root_cron.new(command='/usr/bin/python /home/time_for_pi/menu/noon_fire.py 2> /etc/noon_error.txt', comment='fire the noon gun')	
+	noon_job.set_command("sleep " + sec + "; /usr/bin/python /home/time_for_pi/menu/noon_fire.py 2> /etc/noon_error.txt")
+	noon_job.hour.on(hou)
+	noon_job.minute.on(minute)
+	root_cron.write()
+	
+	for job in root_cron:
+		print job
+	
+	return	
 #=====================================================================================================	
 # This function calls showmenu and then acts on the selected item
 def processmenu(menu, parent=None):
@@ -250,96 +285,18 @@ def processmenu(menu, parent=None):
 				while seconds>60 or seconds<0:
 					seconds = user_input('Enter SECONDS as a whole number between 0 and 59:') #Prompt seconds
 				#====================pre fire warning
-				print "Time before firing time when the warning pulse triggers in hours minutes and seconds *NOTE* this is an offset not a time."
-				whours = user_input('Enter HOURS as a whole number between 0 and 24:') #Prompt hours
-				while whours>23 or whours<0:
-					whours = user_input('Enter HOURS as a whole number between 0 and 24:') #Prompt hours
-				wminutes = user_input('Enter MINUTES as a whole number between 0 and 59:') #Prompt minutes
-				while wminutes>60 or wminutes<0:
-					wminutes = user_input('Enter MINUTES as a whole number between 0 and 59:') #Prompt minutes
-				wseconds = user_input('Enter SECONDS as a whole number between 0 and 59:') #Prompt minutes
+				print "Time before firing time when the warning pulse triggers in seconds *NOTE* this is an offset not a time."
+				wseconds = user_input('Enter SECONDS as a whole number between 0 and 59:') #Prompt seconds
 				while wseconds>60 or wseconds<0:
 					wseconds = user_input('Enter SECONDS as a whole number between 0 and 59:') #Prompt seconds
-				pre_fire = wseconds + (wminutes * 60) + (whours * 3600)
+				#=========firing pulse duration
+				print "Time before firing time when the warning pulse triggers in seconds *NOTE* this is an offset not a time."
+				pulse_duration=user_input('Enter firing pulse duration in seconds: ')
 				
-				#convert entered numbers to absolute to calculate the warning time====================================================================
-				cron_total_time = (hours*3600)+(minutes*60)+seconds
-				total_time = (hours*3600)+(minutes*60)+seconds
-				total_time = total_time-pre_fire
-				if total_time<0:
-					total_time = 86400 + total_time
-				warn_time_h = int(total_time/3600)
-				warn_time_m = int((total_time%3600)/60)
-				warn_time_s = int((total_time%3600)%60)
-				if warn_time_h<10:
-					warn_time_h="0" + str(warn_time_h)
-				else:
-					warn_time_h = str(warn_time_h)
-				if warn_time_m<10:
-					warn_time_m="0" + str(warn_time_m)
-				else:
-					warn_time_m = str(warn_time_m)
-				if warn_time_s<10:
-					warn_time_s="0" + str(warn_time_s)
-				else:
-					warn_time_s = str(warn_time_s)
+				fire_time=str(hours) + ":" + str(minutes) + ":" + str(seconds)
+				firing(wseconds, fire_time, pulse_duration)
+				noon_cron(int(hours), int(minutes), int(seconds), int(wseconds)) #setup the noon gun firing cron job
 				
-				if hours<10:
-					hours="0" + str(hours)
-				else:
-					hours = str(hours)
-				if minutes<10:
-					minutes="0" + str(minutes)
-				else:
-					minutes = str(minutes)
-				if seconds<10:
-					seconds="0" + str(seconds)
-				else:
-					seconds = str(seconds)				
-				
-				'''seconds=seconds-2				
-				if seconds <0:
-					seconds=60+seconds
-					minutes=minutes-1
-					if minutes<0:
-						minutes = 60+minutes
-						hours=hours-1
-						if hours<0:
-							hours = 24+hours'''
-				#calculate time to launch python script to fire the gun====================================================================
-				cron_seconds=wseconds+10
-				if cron_seconds>59:
-					cron_minutes = wminutes+1
-					cron_seconds=wseconds-60
-					if cron_minutes>59:
-						cron_minutes=cron_minutes-60
-						cron_hours=whours+1
-						if cron_hours>23:
-							cron_hours=23
-				else:
-					cron_seconds=wseconds
-					cron_minutes=wminutes
-					cron_hours=whours
-				cron_fire = cron_seconds + (cron_minutes * 60) + (cron_hours * 3600)
-				
-				#conr job time calculation====================================================================
-				total_time = cron_total_time-cron_fire
-				if total_time<0:
-					total_time = 86400 + total_time
-				cron_time_h = str(int(total_time/3600))
-				cron_time_m = str(int((total_time%3600)/60))
-				cron_time_s = str(int(wseconds))
-				
-				#text file containing firing times====================================================================
-				warn_job_text = warn_time_h + ":" + warn_time_m + ":" + warn_time_s
-				fire_job_text = hours +":"+minutes + ":" + seconds
-				replace_line("/home/time_for_pi/menu/gun_time", 0,warn_job_text)  
-				replace_line("/home/time_for_pi/menu/gun_time", 1,fire_job_text)
-				#bash script to set the cron job
-				fire_job_text = "job=\""+cron_time_m + " " + cron_time_h +  " * * * sleep " + cron_time_s + " ; $command\""
-				replace_line("/home/time_for_pi/menu/set_gun", 3, fire_job_text)
-				os.chdir("/home/time_for_pi/menu")
-				subprocess.call("./set_gun")
 				
 			if menu['options'][getin]['command'] == "fpd": # firing pulse duration
 				seconds = user_input('Enter SECONDS as a whole number between 0 and 59:') #Prompt seconds	

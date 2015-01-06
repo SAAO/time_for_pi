@@ -1,13 +1,7 @@
 #!/usr/bin/env python
-'''
 
-Text File format
-
-hh:mm:ss                              (warning time)
-hh:mm:ss							  (firing time)
-ss									  (firing pulse duration)
-'''
 import time, datetime, RPi.GPIO as GPIO
+import sqlite3
 loop=True
 warn_gun=24
 fire_gun=25
@@ -16,13 +10,23 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(warn_gun, GPIO.OUT)
 GPIO.setup(fire_gun, GPIO.OUT)
 
+def time_firing():
+        conn = sqlite3.connect('/home/time_for_pi/frontpage/timeserver.db', timeout=1)
+        curs=conn.cursor()
+        firing_db="SELECT* FROM time_firing"
+        curs.execute(firing_db)
+        ft = [dict(firing_time=row[2], pulse_length=row[3], pre_fire=row[1]) for row in curs.fetchall()] #this returns a single element list of dictionaries containing the data in table time_firing
+        pre_fire_pulse=ft[0]['pre_fire']
+        pulse_len=ft[0]['pulse_length']
+        firing=ft[0]['firing_time']
+        return firing, pre_fire_pulse, pulse_len
+
+
 while loop:
 	current_time_read = datetime.datetime.now().time()
 	current_time = current_time_read.strftime("%H:%M:%S")
-	f = open("/home/time_for_pi/menu/gun_time", "r")
-	warning_time = f.readline().rstrip('\n')
-	noon = f.readline().rstrip('\n')
-	fire_duration = f.readline().rstrip('\n')
+	noon, warning_time, fire_duration = time_firing()
+	
 	float_fire_duration = float(fire_duration)
 	#print fire_duration
 	print current_time	
