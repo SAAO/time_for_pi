@@ -308,15 +308,15 @@ def processmenu(menu, parent=None):
 			if menu['options'][getin]['command'] == "P1": #light pulse 1PPS
 				pulse_insert("1pps")
 			if menu['options'][getin]['command'] == "P2": #light pulse 2Hz
-				pulse_insert("2hz")
+				pulse_insert("2Hz")
 			if menu['options'][getin]['command'] == "P3": #light pulse 5Hz
-				pulse_insert("5hz")
+				pulse_insert("5Hz")
 			if menu['options'][getin]['command'] == "P4": #light pulse 10Hz
-				pulse_insert("10hz")
+				pulse_insert("10Hz")
 			if menu['options'][getin]['command'] == "P5": #light pulse 100Hz
-				pulse_insert("100hz")
+				pulse_insert("100Hz")
 			if menu['options'][getin]['command'] == "P6": #light pulse 1Khz
-				pulse_insert("1khz")
+				pulse_insert("1kHz")
 			if menu['options'][getin]['command'] == "P7": #light pulse OFF
 				pulse_insert("off")
 			#=====================================================================================================			
