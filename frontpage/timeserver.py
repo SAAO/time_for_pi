@@ -1,5 +1,7 @@
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 import sqlite3
+import sys, os
+from crontab import CronTab
 app = Flask(__name__)
 
 app.secret_key = 'tawanda'
@@ -66,7 +68,7 @@ def time_firing():
 	curs=conn.cursor()
 	firing_time="SELECT* FROM time_firing"
 	curs.execute(firing_time)
-	firing = [dict(firing_time=row[2]) for row in curs.fetchall()]
+	firing = [dict(pre_firing=row[1], firing_time=row[2], firing_pulse=row[3] ) for row in curs.fetchall()]
 	return render_template('timefiring.html', firing=firing)
 
 @app.route('/firing', methods=['GET','POST'])
@@ -84,6 +86,7 @@ def firing():
 
 	curs.execute(''' UPDATE time_firing SET pre_firing=?, firing_time=?, firing_pulse=? WHERE fid=? ''', (warning, firing, pulse, firing_id))
 	conn.commit()
+	noon_cron(firing, warning)
 	return redirect(url_for('time_firing'))
 
 #=================================================LOGIN AND LOGOUT FUNTIONS
@@ -106,5 +109,38 @@ def logout():
   error = None
   return render_template('login.html', error=error)
 
+@app.route('/reboot')
+def reboot():
+  os.system('sudo reboot')
+  return redirect('http://www.saao.ac.za', 302)
+
+def noon_cron(fire_t, pre_f_warn):
+	fire_t_list = fire_t.split(":")
+	hour=int(fire_t_list[0])
+	minute=int(fire_t_list[1])
+	second=int(fire_t_list[2])
+	second=second-int(pre_f_warn)-10
+	if second<0:
+		second=60+second
+		minute=minute-1
+		if minute<0:
+			minute=60+minute
+			hour=hour-1
+			if hour<0:
+				hour=24+hour
+	
+	hou=str(hour)
+	min=str(minute)
+	sec=str(second)
+	root_cron = CronTab(user='root')
+	root_cron.remove_all(command='/usr/bin/python /home/time_for_pi/menu/noon_fire.py 2> /etc/noon_error.txt')
+	noon_job = root_cron.new(command='/usr/bin/python /home/time_for_pi/menu/noon_fire.py 2> /etc/noon_error.txt', comment='fire the noon gun')	
+	noon_job.set_command("sleep " + sec + "; /usr/bin/python /home/time_for_pi/menu/noon_fire.py 2> /etc/noon_error.txt")
+	noon_job.hour.on(hou)
+	noon_job.minute.on(minute)
+	root_cron.write()
+	
+	return  
+  
 if __name__ == "__main__":
 	app.run(host="0.0.0.0", port=4000, debug=True)

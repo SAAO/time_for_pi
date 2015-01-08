@@ -1,0 +1,5 @@
+File:			/home/time_for_pi/main/time_service.py
+Line:			216
+Module:			<module>
+Error Type:		UnboundLocalError
+Error:			local variable 'option' referenced before assignment
