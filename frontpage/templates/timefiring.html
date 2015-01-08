@@ -201,9 +201,9 @@ table, td{
     <ul class="nav">
        <li><a href="home">Home</a></li>
       <li><a href="timepulse">Light Pulse Selection</a></li>
-      <li><a href="timefiring">Non Gun Firing Time</a></li>
+      <li><a href="timefiring">Noon Gun Firing Setup</a></li>
       <li><a href="gpscheck">Check GPS Data</a></li>
-	  <li><a href="#">Reboot</a></li>
+	  <li><a href="reboot">Reboot</a></li>
 	  <li><a href="logout">Logout</a></li>
     </ul>
 	<br>
@@ -219,13 +219,16 @@ table, td{
 
 		<table>
 		
-		<h4>Time Firing Pulse</h4>
-
+		<h4>Noon Gun Firing Setup</h4>
+		<span style="color:grey;">
 		{% for firing in firing %}
 		<h5>Current Firing Time is : {{firing.firing_time}}</h5>
+		<h5>Current Warning Pulse is : {{firing.pre_firing}} seconds</h5>
+		<h5>Current Pulse Duration is : {{firing.firing_pulse}} seconds</h5>
 		{% endfor %}
+		</span>
 		<!--********************************Pre-Firing Warning form******************************** -->
-		<p>NB: Descriptions should go here </p>
+		<p>NB: Please make sure all the fields below are complete before clicking submit. </p>
 		<form action="/firing", method="POST">
 		<tr>
 		<td class="timepulse" style="width:200px;height:30px;align:centre">

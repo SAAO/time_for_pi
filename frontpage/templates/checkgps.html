@@ -155,9 +155,9 @@ td{
     <ul class="nav">
        <li><a href="home">Home</a></li>
       <li><a href="timepulse">Light Pulse Selection</a></li>
-      <li><a href="timefiring">Non Gun Firing Time</a></li>
+      <li><a href="timefiring">Noon Gun Firing Setup</a></li>
       <li><a href="gpscheck">Check GPS Data</a></li>
-	  <li><a href="#">Reboot</a></li>
+	  <li><a href="reboot">Reboot</a></li>
 	  <li><a href="logout">Logout</a></li>
     </ul>
 	<br>
@@ -176,11 +176,11 @@ td{
 		{% for gps in gps %}
 		
 		<tr>
-		<td class="timepulse" style="background:black;width:200px;height:30px; color:white; align:centre"><strong> GPS Time </strong></td> <td class="timepulse" style="background:black;width:200px;height:30px; color:white; align:centre"><strong> GPS Status</strong></td>
+		<td class="timepulse" style="background:black;width:300px;height:30px; color:white; align:centre"><strong> GPS UCT </strong></td> <td class="timepulse" style="background:black;width:300px;height:30px; color:white; align:centre"><strong> GPS Status</strong></td>
 		
 		</tr>
 		<tr>
-		<td class="timepulse" style="width:200px;height:30px; align:centre"> {{gps.gpstime}} UTC</td> <td class="timepulse" style="width:200px;height:30px; align:centre">{{gps.gpsstatus}} </td>
+		<td class="timepulse" style="width:300px;height:30px; align:centre"> {{gps.gpstime}} UTC</td> <td class="timepulse" style="width:300px;height:30px; align:centre">{{gps.gpsstatus}} </td>
 		</tr>
 		</table>
 	<!--****************************************************************************************************************************************** -->
@@ -188,11 +188,11 @@ td{
 		<br>
 		<table>
 		<tr>
-		<td class="timepulse" style="background:black;width:200px;height:30px; color:white; align:centre"><strong> Longitude</strong></td> <td class="timepulse" style="background:black;width:200px;height:30px; color:white; align:centre"><strong> Latitude</strong></td>
+		<td class="timepulse" style="background:black;width:300px;height:30px; color:white; align:centre"><strong> Latitude </strong></td> <td class="timepulse" style="background:black;width:300px;height:30px; color:white; align:centre"><strong> Longitude</strong></td>
 		
 		</tr>
 		<tr>
-		<td class="timepulse" style="width:200px;height:30px; align:centre"> {{gps.longitude}} </td> <td class="timepulse" style="width:200px;height:30px; align:centre">{{gps.lattitude}} </td>
+		<td class="timepulse" style="width:300px;height:30px; align:centre"> {{gps.lattitude}} </td> <td class="timepulse" style="width:300px;height:30px; align:centre">{{gps.longitude}} </td>
 		</tr>
 		{% endfor %}
 		</table>

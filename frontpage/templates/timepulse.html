@@ -152,9 +152,9 @@ table{
     <ul class="nav">
        <li><a href="home">Home</a></li>
       <li><a href="timepulse">Light Pulse Selection</a></li>
-      <li><a href="timefiring">Non Gun Firing Time</a></li>
+      <li><a href="timefiring">Noon Gun Firing Setup</a></li>
       <li><a href="gpscheck">Check GPS Data</a></li>
-	  <li><a href="#">Reboot</a></li>
+	  <li><a href="reboot">Reboot</a></li>
 	  <li><a href="logout">Logout</a></li>
     </ul>
 	<br>
@@ -167,45 +167,48 @@ table{
 	</p>
     <!-- end .sidebar1 --></div>
   <div class="content">
-
+		<div style="position:relative; width:40%;float:left;">
 		<table>
 		<h4>Time Pulse Selection</h4>
 		<form action="/pulseinsert" method="POST">
 		<tr>
-		<td class="timepulse" style="background:black;width:100px;height:30px; color:white; align:centre"><strong> 1PPS </strong></td> <td class="radio-button"> <input type="radio" name="timepulse" value="1pps"></td>
+		<td class="timepulse" style="background:black;width:100px;height:30px; color:white; align:centre"><strong> 1PPS </strong></td> <td class="radio-button"> <input type="radio" name="timepulse" value="1PPS"></td>
 		</tr>
 		<tr>
-		<td class="timepulse" style="background:black;width:100px;height:30px; color:white; align:centre"><strong> 2Hz</strong></td> <td class="radio-button"> <input type="radio" name="timepulse" value="2hz"></td>
+		<td class="timepulse" style="background:black;width:100px;height:30px; color:white; align:centre"><strong> 2Hz</strong></td> <td class="radio-button"> <input type="radio" name="timepulse" value="2Hz"></td>
 		</tr>
 		<tr>
-		<td class="timepulse" style="background:black;width:100px;height:30px; color:white; align:centre"><strong> 5Hz</strong></td> <td class="radio-button"> <input type="radio" name="timepulse" value="5hz"></td>
+		<td class="timepulse" style="background:black;width:100px;height:30px; color:white; align:centre"><strong> 5Hz</strong></td> <td class="radio-button"> <input type="radio" name="timepulse" value="5Hz"></td>
 		</tr>
 		<tr>
-		<td class="timepulse" style="background:black;width:100px;height:30px; color:white; align:centre"><strong> 10Hz</strong></td> <td class="radio-button"> <input type="radio" name="timepulse" value="10hz"></td>
+		<td class="timepulse" style="background:black;width:100px;height:30px; color:white; align:centre"><strong> 10Hz</strong></td> <td class="radio-button"> <input type="radio" name="timepulse" value="10Hz"></td>
 		</tr>
 		<tr>
-		<td class="timepulse" style="background:black;width:100px;height:30px; color:white; align:centre"><strong> 100Hz</strong></td> <td class="radio-button"> <input type="radio" name="timepulse" value="100hz"></td>
+		<td class="timepulse" style="background:black;width:100px;height:30px; color:white; align:centre"><strong> 100Hz</strong></td> <td class="radio-button"> <input type="radio" name="timepulse" value="100Hz"></td>
 		</tr>
 		<tr>
-		<td class="timepulse" style="background:black;width:100px;height:30px; color:white; align:centre"><strong> 1kHz</strong></td> <td class="radio-button"> <input type="radio" name="timepulse" value="1khz"></td>
+		<td class="timepulse" style="background:black;width:100px;height:30px; color:white; align:centre"><strong> 1kHz</strong></td> <td class="radio-button"> <input type="radio" name="timepulse" value="1kHz"></td>
 		</tr>
 		<tr>
-		<td class="timepulse" style="background:black;width:100px;height:30px; color:white; align:centre"><strong> OFF</strong></td> <td class="radio-button"> <input type="radio" name="timepulse" value="off"></td>
+		<td class="timepulse" style="background:black;width:100px;height:30px; color:white; align:centre"><strong> OFF</strong></td> <td class="radio-button"> <input type="radio" name="timepulse" value="OFF"></td>
 		</tr>
 		
-		<tr>
-
-		<td><br> </td>
-		<td style="padding-left:100px">
-		<br>
-		<input type="submit" value="submit" > </td>
-		</tr>
-		</form>
 		</table>
+		</div>
+		<div style="position:relative; width:40%; padding-top:150px;float:left;">
+		<table><tr>
+		<td style="padding-left:0px">
+		
+		<input type="submit" value="submit" > 
+		
+		</form>
+		
 		{% for pulse in pulse %}
-		<h4> {{pulse.selection}} => SELECTED</h4>
+		SELECTED : {{pulse.selection}}
 		{%endfor%}
+		</td></tr></table>
 	<!-- end .content --></div>
+	</div>
   <div class="footer">
     <p>Interface designed by Tawanda Mukanhairi</p>
     <!-- end .footer --></div>
