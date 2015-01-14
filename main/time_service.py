@@ -41,6 +41,7 @@ old_sast=0                      # initialize seconds register
 diff=0
 delay=0
 previous_option = '7Hz'
+option='222222'
 
 
 #================================================================GPIO SETUP==========================================
