@@ -21,19 +21,49 @@ def time_firing():
         firing=ft[0]['firing_time']
         return firing, pre_fire_pulse, pulse_len
 
+def warning_calc(nt, wt):
+	h, m, s = nt.split(":")
+        seconds = int(h)*3600+int(m)*60+int(s)*0
+        warns = seconds - int(wt)
+        if warns<0:
+                warns=86400+warns
+        wh = int((warns/3600))
+        if wh<10:
+                whs="0"+str(wh)
+	else:
+		whs=str(wh)
+        wm = int(((warns-(wh*3600))/60))
+        if wm<10:
+                wms="0"+str(wm)
+	else:
+		wms=str(wm)
+        ws = int(warns-wh*3600-wm*60)
+        if ws<10:
+                wss="0"+str(ws)
+	else:
+		wss=str(ws)
+	
+        warnt = whs + ":" + wms +":" + wss
+	return warnt
+
+
 
 while loop:
 	current_time_read = datetime.datetime.now().time()
 	current_time = current_time_read.strftime("%H:%M:%S")
 	noon, warning_time, fire_duration = time_firing()
 	
-	float_fire_duration = float(fire_duration)
-	#print fire_duration
-	print current_time	
-	print warning_time	
+
+	warn_time=warning_calc(noon, warning_time)		
+	
+	print warn_time
 	print noon
-	print fire_duration
-	if current_time == warning_time and current_time < noon:
+	print current_time
+
+
+
+	float_fire_duration = float(fire_duration)
+	if current_time == warn_time and current_time < noon:
 		print "warning"
 		GPIO.output(warn_gun, True)
 		time.sleep(float_fire_duration)
