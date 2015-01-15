@@ -23,7 +23,7 @@ def time_firing():
 
 def warning_calc(nt, wt):
 	h, m, s = nt.split(":")
-        seconds = int(h)*3600+int(m)*60+int(s)*0
+        seconds = int(h)*3600+int(m)*60+int(s)
         warns = seconds - int(wt)
         if warns<0:
                 warns=86400+warns
