@@ -290,7 +290,6 @@ def processmenu(menu, parent=None):
 				while wseconds>60 or wseconds<0:
 					wseconds = user_input('Enter SECONDS as a whole number between 0 and 59:') #Prompt seconds
 				#=========firing pulse duration
-				print "Time before firing time when the warning pulse triggers in seconds *NOTE* this is an offset not a time."
 				pulse_duration=user_input('Enter firing pulse duration in seconds: ')
 				
 				fire_time=str(hours) + ":" + str(minutes) + ":" + str(seconds)
