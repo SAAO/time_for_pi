@@ -56,9 +56,9 @@ while loop:
 
 	warn_time=warning_calc(noon, warning_time)		
 	
-	print warn_time
-	print noon
-	print current_time
+	print "warning time: " + warn_time
+	print "Firing time: " + noon
+	print "current time: " + current_time
 
 
 

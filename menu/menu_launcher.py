@@ -292,7 +292,21 @@ def processmenu(menu, parent=None):
 				#=========firing pulse duration
 				pulse_duration=user_input('Enter firing pulse duration in seconds: ')
 				
-				fire_time=str(hours) + ":" + str(minutes) + ":" + str(seconds)
+				if(hours<10):
+					fire_time="0"+str(hours)
+				else:
+					fire_time=str(hours)
+				if(minutes<10):
+					fire_time+=":"+"0"+str(minutes)
+				else:
+					fire_time+=":"+str(minutes)
+				if(seconds<10):
+					fire_time+=":" +"0"+ str(seconds)
+				else:
+					fire_time+=":" + str(seconds)
+
+
+
 				firing(wseconds, fire_time, pulse_duration)
 				noon_cron(int(hours), int(minutes), int(seconds), int(wseconds)) #setup the noon gun firing cron job
 				
