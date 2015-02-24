@@ -14,7 +14,7 @@ cat CFG-MSG-GPGSV-OFF.ubx > /dev/ttyACM0
 cat CFG-MSG-GPVTG-OFF.ubx > /dev/ttyACM0
 cat CFG-MSG-GPGLL-OFF.ubx > /dev/ttyACM0
 cat CFG-MSG-GPGSA-OFF.ubx > /dev/ttyACM0
-cat CFG-MSG-GPGGA-OFF.ubx > /dev/ttyACM0
+#cat CFG-MSG-GPGGA-OFF.ubx > /dev/ttyACM0 #leave  the GGA message on so that a 3D fix can be determined
 cat CFG-MSG-KHZ-NEG.ubx > /dev/ttyACM0
 
 

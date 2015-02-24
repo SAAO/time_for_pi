@@ -217,7 +217,7 @@ if __name__ == '__main__':
 			previous_option=IO(previous_option)
 			#It may take a second or two to get good data
 			#print gpsd.fix.latitude,', ',gpsd.fix.longitude,'  Time: ',gpsd.utc
-			if gpsd.fix.mode==MODE_2D:
+			if gpsd.fix.mode==MODE_3D:
 				fix_flag=True
 				GPIO.output(gps_status, True)   # switch on gps status led if it has a 3d fix
 				#==========================================================calculate sidereal time from gps time
