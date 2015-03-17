@@ -134,35 +134,35 @@ def time_pulse(option):
 		GPIO.output(LP_D0, False)
 		GPIO.output(LP_D1, False)
 		GPIO.output(LP_D2, False)
-	elif option == '2hz':
+	elif option == '2Hz':
 		print option
 		os.system("bash /home/time_for_pi/gps_setup/invert_khz")
 		delay=0.25
 		GPIO.output(LP_D0, True)
 		GPIO.output(LP_D1, False)
 		GPIO.output(LP_D2, False)		
-	elif option == '5hz':
+	elif option == '5Hz':
 		os.system("bash /home/time_for_pi/gps_setup/invert_khz")
 		delay=0.1
 		GPIO.output(LP_D0, False)
 		GPIO.output(LP_D1, True)
 		GPIO.output(LP_D2, False)
-	elif option == '10hz':
+	elif option == '10Hz':
 		os.system("bash /home/time_for_pi/gps_setup/invert_khz")
 		delay=0.05
 		GPIO.output(LP_D0, True)
 		GPIO.output(LP_D1, True)
 		GPIO.output(LP_D2, False)
-	elif option == '100hz':
+	elif option == '100Hz':
 		os.system("bash /home/time_for_pi/gps_setup/invert_khz")
 		delay=0.005
 		GPIO.output(LP_D0, False)
 		GPIO.output(LP_D1, False)
 		GPIO.output(LP_D2, True)
-	elif option == '1khz':
-		os.system("bash /home/time_for_pi/gps_setup/noninvert_khz")
-		delay=0
-		GPIO.output(LP_D0, True)
+	elif option == '1kHz':
+		#os.system("bash /home/time_for_pi/gps_setup/noninvert_khz")
+		delay=0.005
+		GPIO.output(LP_D0, False)
 		GPIO.output(LP_D1, False)
 		GPIO.output(LP_D2, True)
 	time.sleep(1)		

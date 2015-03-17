@@ -1,0 +1,5 @@
+File:			/home/time_for_pi/main/time_service.py
+Line:			240
+Module:			<module>
+Error Type:		OperationalError
+Error:			database is locked
