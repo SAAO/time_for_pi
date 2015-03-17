@@ -128,7 +128,7 @@ def IO(previous_option):
 	
 def time_pulse(option):
 	GPIO.output(LIGHT_PULSE_ON, False)
-	if option == '1pps':
+	if option == '1PPS':
 		os.system("bash /home/time_for_pi/gps_setup/invert_khz")
 		delay=0
 		GPIO.output(LP_D0, False)
