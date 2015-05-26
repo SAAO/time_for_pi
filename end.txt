@@ -1,5 +1,5 @@
 File:			/home/time_for_pi/main/time_service.py
-Line:			240
+Line:			284
 Module:			<module>
-Error Type:		OperationalError
-Error:			database is locked
+Error Type:		NameError
+Error:			name 'gps_status' is not defined

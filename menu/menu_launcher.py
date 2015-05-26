@@ -319,7 +319,7 @@ def processmenu(menu, parent=None):
 				replace_line("/home/time_for_pi/menu/gun_time", 2,seconds)
 			#=====================================================================================================
 			if menu['options'][getin]['command'] == "P1": #light pulse 1PPS
-				pulse_insert("1pps")
+				pulse_insert("1PPS")
 			if menu['options'][getin]['command'] == "P2": #light pulse 2Hz
 				pulse_insert("2Hz")
 			if menu['options'][getin]['command'] == "P3": #light pulse 5Hz

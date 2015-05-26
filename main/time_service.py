@@ -23,7 +23,7 @@ traceback_template = '''Traceback (most recent call last):
 
 
 #==================INITIALIZE REGISTERS===============================================================================
-gps_status=4
+#gps_status=4
 arm_pulse=17
 ng_warning=24
 ng_fire=25
@@ -47,7 +47,7 @@ option='222222'
 #================================================================GPIO SETUP==========================================
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(gps_status, GPIO.OUT)  # setup gps status led
+#GPIO.setup(gps_status, GPIO.OUT)  # setup gps status led
 GPIO.setup(arm_pulse, GPIO.OUT) # setup 500ms arm pulse
 GPIO.setup(LP_D0, GPIO.OUT) # lightpulse select D0
 GPIO.setup(LP_D1, GPIO.OUT) # lightpulse select D1
@@ -58,7 +58,7 @@ GPIO.setup(ng_fire, GPIO.OUT, pull_up_down = GPIO.PUD_DOWN) # noon gun fire
 GPIO.setup(kilohertz, GPIO.IN) 
 
 
-GPIO.output(gps_status, False)
+#GPIO.output(gps_status, False)
 GPIO.output(LIGHT_PULSE_ON, False)
 GPIO.output(LP_D0, False)
 GPIO.output(LP_D1, False)
@@ -106,12 +106,15 @@ def dech(time):
 	return 0, 0, 0
 #=====================================================================================================
 def pulse_read():
-	the_id=1
-	conn = sqlite3.connect('/home/time_for_pi/frontpage/timeserver.db', timeout=1)
-	curs=conn.cursor()
-	firing_db="SELECT* FROM time_pulse"
-	curs.execute(firing_db)
-	pulse=[dict(selection=row[1]) for row in curs.fetchall()]
+	try:
+		the_id=1
+		conn = sqlite3.connect('/home/time_for_pi/frontpage/timeserver.db', timeout=1)
+		curs=conn.cursor()
+		firing_db="SELECT* FROM time_pulse"
+		curs.execute(firing_db)
+		pulse=[dict(selection=row[1]) for row in curs.fetchall()]
+	except:
+		return 7
 	return pulse[0]['selection']
 def IO(previous_option):
 	try:
@@ -160,9 +163,9 @@ def time_pulse(option):
 		GPIO.output(LP_D1, False)
 		GPIO.output(LP_D2, True)
 	elif option == '1kHz':
-		#os.system("bash /home/time_for_pi/gps_setup/noninvert_khz")
-		delay=0.005
-		GPIO.output(LP_D0, False)
+		os.system("bash /home/time_for_pi/gps_setup/noninvert_khz")
+		delay=0
+		GPIO.output(LP_D0, True)
 		GPIO.output(LP_D1, False)
 		GPIO.output(LP_D2, True)
 	time.sleep(1)		
@@ -180,10 +183,13 @@ def time_pulse(option):
 	
 #=====================================================================================================	
 def gps_data(gps_time, gps_status, gps_long, gps_lat, gps_tdate):
-        conn=sqlite3.connect('/home/time_for_pi/frontpage/timeserver.db', timeout=1)
-        curs=conn.cursor()
-        curs.execute(''' UPDATE gps_check SET gpstime=?, gpsstatus=?, tdate=?, longitude=?, lattitude=? ''', (gps_time, gps_status, gps_tdate, gps_long, gps_lat))
-        conn.commit()
+	try:
+        	conn=sqlite3.connect('/home/time_for_pi/frontpage/timeserver.db', timeout=1)
+        	curs=conn.cursor()
+        	curs.execute(''' UPDATE gps_check SET gpstime=?, gpsstatus=?, tdate=?, longitude=?, lattitude=? ''', (gps_time, gps_status, gps_tdate, gps_long, gps_lat))
+        	conn.commit()
+	except:
+		return
         return
  #=====================================================================================================
 class GpsPoller(threading.Thread):
@@ -219,7 +225,7 @@ if __name__ == '__main__':
 			#print gpsd.fix.latitude,', ',gpsd.fix.longitude,'  Time: ',gpsd.utc
 			if gpsd.fix.mode==MODE_3D:
 				fix_flag=True
-				GPIO.output(gps_status, True)   # switch on gps status led if it has a 3d fix
+				#GPIO.output(gps_status, True)   # switch on gps status led if it has a 3d fix
 				#==========================================================calculate sidereal time from gps time
 				gpsNow = gpsd.utc
 				gpsNow = gpsNow.replace('Z', 'UTC')
