@@ -5,7 +5,7 @@ import sqlite3
 loop=True
 warn_gun=24
 fire_gun=25
-count_gun = 4
+count_gun = 9 # change this to 4 for the noon gun module, also change the gps_stat to 9 in time_service.py
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(warn_gun, GPIO.OUT)

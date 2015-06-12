@@ -23,7 +23,7 @@ traceback_template = '''Traceback (most recent call last):
 
 
 #==================INITIALIZE REGISTERS===============================================================================
-#gps_status=4
+gps_stat=4
 arm_pulse=17
 ng_warning=24
 ng_fire=25
@@ -47,7 +47,7 @@ option='222222'
 #================================================================GPIO SETUP==========================================
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
-#GPIO.setup(gps_status, GPIO.OUT)  # setup gps status led
+GPIO.setup(gps_stat, GPIO.OUT)  # setup gps status led
 GPIO.setup(arm_pulse, GPIO.OUT) # setup 500ms arm pulse
 GPIO.setup(LP_D0, GPIO.OUT) # lightpulse select D0
 GPIO.setup(LP_D1, GPIO.OUT) # lightpulse select D1
@@ -58,7 +58,7 @@ GPIO.setup(ng_fire, GPIO.OUT, pull_up_down = GPIO.PUD_DOWN) # noon gun fire
 GPIO.setup(kilohertz, GPIO.IN) 
 
 
-#GPIO.output(gps_status, False)
+GPIO.output(gps_stat, False)
 GPIO.output(LIGHT_PULSE_ON, False)
 GPIO.output(LP_D0, False)
 GPIO.output(LP_D1, False)
@@ -225,7 +225,7 @@ if __name__ == '__main__':
 			#print gpsd.fix.latitude,', ',gpsd.fix.longitude,'  Time: ',gpsd.utc
 			if gpsd.fix.mode==MODE_3D:
 				fix_flag=True
-				#GPIO.output(gps_status, True)   # switch on gps status led if it has a 3d fix
+				GPIO.output(gps_stat, True)   # switch on gps status led if it has a 3d fix
 				#==========================================================calculate sidereal time from gps time
 				gpsNow = gpsd.utc
 				gpsNow = gpsNow.replace('Z', 'UTC')
@@ -281,7 +281,7 @@ if __name__ == '__main__':
 					lcd.writeString(sidereal_time, fd)
 					
 			else:	#else if gpsd reports no fix switch off led
-				GPIO.output(gps_status, False)
+				GPIO.output(gps_stat, False)
 				if fix_flag:
 					no_gps_fix()
 					fix_flag=False

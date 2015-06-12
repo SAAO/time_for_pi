@@ -161,26 +161,13 @@ ul.nav a:hover, ul.nav a:active, ul.nav a:focus { /* this changes the background
   <div class="content">
     <h4>SAAO GPS LOCKED TIME SERVER</h4>
 	
-	<h4> System Overview</h4>
-    <p>The core is a raspberry pi linux computer which synchronises it’s clock to a ublox GPS using an NTP program. 
-	The system clock’s accuracy is within a few hundred nanoseconds of the GPS clock, which is in turn within 15ns of atomic clocks 
-	on-board GPS satellites orbit.
+	<h5> About</h5>
+    <p>Be aware that the CSS for these layouts is heavily commented. If you do most of your work in Design view, have a peek at the code to get tips on working with the CSS for the fixed 
+	layouts. You can remove these comments before you launch your site. To learn more about the techniques used in these CSS Layouts, read this article at Adobe's Developer Center - 
+	Be aware that the CSS for these layouts is heavily commented. If you do most of your work in Design view, have a peek at the code to get tips on working with the CSS for the fixed 
 	</p>
-	<h4> Accuracy</h4>
-	<p>Extracting the time is done via standard network time protocols. The tested accuracy of another pc’s system clock within the 
-	same LAN as the GPS locked time server is within 1ms ± 150us using sntp (simple network time protocol).
-	</p>
-	
-	<h4> Hardware outputs</h4>
-	<p>
-	There are several hardware pulse outputs available for interfacing with instruments, these are derived directly from the GPS’ output 
-	pulses (1kHz, and 1PPS) and are not subject to processing delays within the raspberry pi.
-	<ul>
-		<li> 1kHz - 10% duty cycle</li>
-		<li> 1PPS - 100ms pulse every second + 500ms pulse on the minute</li>
-		<li> Selectable frequency output (attached to an LED within the light path) - derived from the 1kHz signal from the GPS</li>
-		<li> Timed pulse that will trigger at a specified time (with an optional warning pulse on a separate pin)</li>
-	</ul>
+	<p>Be aware that the CSS for these layouts is heavily commented. If you do most of your work in Design view, have a peek at the code to get tips on working with the CSS for the fixed 
+	layouts. You can remove these comments before you launch your site. To learn more about the techniques used in these CSS Layouts, read this article at Adobe's Developer Center - 
 	</p>
         <!-- end .content --></div>
   <div class="footer">
