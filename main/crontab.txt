@@ -1,0 +1,5 @@
+0 8 * * * /usr/bin/python /home/time_for_pi/tracking_summary.py 2> /etc/tracking_error.txt >> /home/pi/cron.log
+* * * * *sudo bash /home/time_for_pi/main/python_check > /home/pi/cron.log
+0 14 * * * sudo reboot
+#fire the noon gun
+59 11 * * * sleep 35; /usr/bin/python /home/time_for_pi/menu/noon_fire.py 2> /etc/noon_error.txt >> /home/pi/cron.log
