@@ -17,7 +17,6 @@ gpsd_pid=$(pidof gpsd)
 if ps -p $gpsd_pid > /dev/null; then
    echo "GPSD is running"
    # process was found
-   exit
 else
   # process not found
   echo "GPSD IS NOT RUNNING"
