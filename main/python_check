@@ -22,8 +22,9 @@ else
   echo "GPSD IS NOT RUNNING"
   cd /home/time_for_pi/main
   sudo ./gps_init
-  
-  chronyd_pid=$(pidof chronyd)
+fi
+
+chronyd_pid=$(pidof chronyd)
 
 if ps -p $chronyd_pid > /dev/null; then
    echo "Chronyd is running"
